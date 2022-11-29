@@ -1,13 +1,11 @@
 package com.udacity.vehicles.api;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,7 +94,14 @@ public class CarControllerTest {
          *   the whole list of vehicles. This should utilize the car from `getCar()`
          *   below (the vehicle will be the first in the list).
          */
-
+        Car car = getCar();
+        car.setId(1L);
+        mvc.perform(get(new URI("/cars"))
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$..carList[0].id").value(car.getId().intValue()))
+            .andExpect(jsonPath("$..carList[0].createdAt").value(car.getCreatedAt()))
+            .andExpect(jsonPath("$..carList[0].price").value(car.getPrice()));
     }
 
     /**
@@ -109,6 +114,14 @@ public class CarControllerTest {
          * TODO: Add a test to check that the `get` method works by calling
          *   a vehicle by ID. This should utilize the car from `getCar()` below.
          */
+        Car car = getCar();
+        car.setId(1L);
+        mvc.perform(get(new URI("/cars/" + car.getId()))
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(car.getId().intValue())))
+            .andExpect(jsonPath("$.createdAt", is(car.getCreatedAt())))
+            .andExpect(jsonPath("$.price", is(car.getPrice())));
     }
 
     /**
@@ -122,6 +135,11 @@ public class CarControllerTest {
          *   when the `delete` method is called from the Car Controller. This
          *   should utilize the car from `getCar()` below.
          */
+        Car car = getCar();
+        car.setId(1L);
+        mvc.perform(delete(new URI("/cars/" + car.getId()))
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isNoContent());
     }
 
     /**
