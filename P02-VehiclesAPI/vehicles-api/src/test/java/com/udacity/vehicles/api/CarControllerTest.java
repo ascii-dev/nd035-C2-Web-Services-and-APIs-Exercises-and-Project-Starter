@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -117,6 +118,25 @@ public class CarControllerTest {
         Car car = getCar();
         car.setId(1L);
         mvc.perform(get(new URI("/cars/" + car.getId()))
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(car.getId().intValue())))
+            .andExpect(jsonPath("$.createdAt", is(car.getCreatedAt())))
+            .andExpect(jsonPath("$.price", is(car.getPrice())));
+    }
+
+    /**
+     * Tests the update operation for a single car by ID
+     * @throws Exception if the update operation for a single car fails
+     */
+    @Test
+    public void updateCar() throws Exception {
+        Car car = getCar();
+        car.setId(1L);
+        System.out.println(json.write(car).getJson());
+        mvc.perform(put(new URI("/cars/" + car.getId()))
+                .content(json.write(car).getJson())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is(car.getId().intValue())))
